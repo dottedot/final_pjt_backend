@@ -33,6 +33,9 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # Custom Apps
     'movies',
+    'accounts',
+    'comments',
+    'reviews',
 
     # Third-party packages
     'corsheaders',
