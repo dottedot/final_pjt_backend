@@ -14,4 +14,5 @@ class Movies(models.Model):
     tagline = models.TextField()
     release_date = models.DateTimeField(auto_now=False)
     vote_average = models.FloatField() 
+    vote_count = models.IntegerField()
     runtime = models.IntegerField()

@@ -34,8 +34,6 @@ INSTALLED_APPS = [
     # Custom Apps
     'movies',
     'accounts',
-    'comments',
-    'reviews',
 
     # Third-party packages
     'corsheaders',
@@ -144,7 +142,7 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
-# AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'accounts.User'
 
 
 # CORS WHITELIST
