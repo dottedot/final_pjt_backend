@@ -144,6 +144,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
+AllOWED_HOSTS = ['*']
 
 # CORS WHITELIST
 CORS_ALLOWED_ORIGINS = [
