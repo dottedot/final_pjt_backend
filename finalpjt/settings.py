@@ -144,7 +144,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
-AllOWED_HOSTS = ['13.209.181.35','localhost','127,0,0,1', 'ec2-13-209-181-35.ap-northeast-2.compute.amazonaws.com']
+ALLOWED_HOSTS = ['13.209.181.35','localhost','127,0,0,1']
 
 # CORS WHITELIST
 CORS_ALLOWED_ORIGINS = [
