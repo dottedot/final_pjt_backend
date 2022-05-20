@@ -2,7 +2,13 @@ from django.db import models
 
 # Create your models here.
 class Genres(models.Model):
+    tmdb_genre_id = models.IntegerField()
     genre = models.CharField(max_length=10)
+
+
+class MovieGenre(models.Model):
+    movie_fk = models.ForeignKey('Movies', on_delete=models.CASCADE)
+    genre_fk = models.ForeignKey('Genres', on_delete=models.CASCADE)
 
 
 class Movies(models.Model):
