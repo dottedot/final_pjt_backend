@@ -32,7 +32,7 @@ def popular(request):
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
 def detail(request, movie_pk):
-    movie = Movies.objects.get(id=movie_pk)
+    movie = Movies.objects.get(tmdb_id=movie_pk)
     genres = Genres.objects.filter(movie_id=movie_pk)
     movie_serializer = DetailMovieListSerializer(movie)
     genre_serializer = GenreListSerializer(genres, many=True)
