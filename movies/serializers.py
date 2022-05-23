@@ -4,19 +4,20 @@ from .models import (
     Genres, 
     Movies, 
     Reviews, 
-    Comments
+    Comments,
+    UserVotededMovies,
     )
 
 
+# Movie Serializer
 class MovieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movies
         fields = (
-            'id',
+            'tmdb_id',
             'title',
             'posterurl',
         )
-
 
 class DetailMovieListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,12 +36,14 @@ class DetailMovieListSerializer(serializers.ModelSerializer):
         )
 
 
+# Genre Serializer
 class GenreListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genres
         fields = ('genre',)
 
 
+# Review Serializer
 class ReviewListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reviews
@@ -53,18 +56,6 @@ class ReviewListSerializer(serializers.ModelSerializer):
             'updated_at',
             )
 
-
-class CommentListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comments
-        fields = (
-            'id',
-            'content',
-            'created_at',
-            'updated_at',
-            )
-
-
 class ReviewSaveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reviews
@@ -75,7 +66,18 @@ class ReviewSaveSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             )
+            
 
+# Comment Serializer
+class CommentListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comments
+        fields = (
+            'id',
+            'content',
+            'created_at',
+            'updated_at',
+            )
 
 class CommentSaveSerializer(serializers.ModelSerializer):
     class Meta:

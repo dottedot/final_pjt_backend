@@ -20,6 +20,7 @@ class Genres(models.Model):
     genre = models.CharField(max_length=10)
 
 
+
 class Reviews(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movies, on_delete=models.CASCADE)
@@ -39,7 +40,7 @@ class Comments(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class UserClickedMovies(models.Model):
+class UserVotededMovies(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movies, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
