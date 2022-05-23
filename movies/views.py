@@ -5,19 +5,17 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authtoken.models import Token
 
-from .models import Genres, Movies, Reviews
-from .serializers import (
-    GenreListSerializer, 
-    MovieListSerializer,
-    DetailMovieListSerializer,
-    ReviewListSerializer,
-    CommentListSerializer,
-    ReviewSaveSerializer,
-    CommentSaveSerializer,
+from .models import (
+    Genres, Movies,
+    Reviews, Comments,
     )
-from dj_rest_auth.serializers import TokenSerializer
+from .serializers import (
+    GenreListSerializer, MovieListSerializer, DetailMovieListSerializer,
+    ReviewListSerializer, CommentListSerializer,
+    ReviewSaveSerializer, CommentSaveSerializer,
+    )
+
 User = get_user_model()
 
 # Create your views here.
@@ -113,11 +111,42 @@ def reviewDetail(request, movie_pk, review_pk):
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def comments(request, movie_pk, review_pk):
-    pass
+    movie = get_object_or_404(Movies, tmdb_id=movie_pk)
+    review = get_object_or_404(Reviews, pk=review_pk)
+
+    if request.method == 'GET':
+        comments = Comments.objects.filter(movie=movie, review=review_pk)
+        serializer = CommentListSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'POST':
+        user = User.objects.get(pk=request.user.id)
+        serializer = CommentSaveSerializer(data=request.data)
+
+        # 유효성 검사
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(movie=movie, user=user, review=review)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def commentDetail(request, movie_pk, review_pk, comment_pk):
-    pass
+    movie = get_object_or_404(Movies, tmdb_id=movie_pk)
+    review = get_object_or_404(Reviews, pk=review_pk)
+    comment = Comments.objects.get(pk=comment_pk)
+
+    if request.method == 'DELETE':
+        comment.delete()
+        data = {
+            'result': f'{comment_pk} 삭제되었습니다.'
+        }
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
+
+    elif request.method == 'PUT':
+        user = User.objects.get(pk=request.user.id)
+        serializer = CommentSaveSerializer(data=request.data, instance=comment)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(movie=movie, user=user, review=review)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
