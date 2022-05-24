@@ -40,7 +40,8 @@ class Comments(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class UserVotededMovies(models.Model):
+class UserGenreMovies(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    movie = models.ForeignKey(Movies, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    genre1 = models.CharField(max_length=10)
+    genre2 = models.CharField(max_length=10)
+    genre3 = models.CharField(max_length=10)

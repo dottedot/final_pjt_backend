@@ -9,13 +9,14 @@ from rest_framework.permissions import IsAuthenticated
 from .models import (
     Genres, Movies,
     Reviews, Comments,
+    UserGenreMovies,
     )
 from .serializers import (
     GenreListSerializer, MovieListSerializer, DetailMovieListSerializer,
     ReviewListSerializer, CommentListSerializer,
     ReviewSaveSerializer, CommentSaveSerializer,
+    UserGenreSerializer,
     )
-from movies import serializers
 
 User = get_user_model()
 
@@ -26,6 +27,20 @@ User = get_user_model()
 def recommendation(request):
     pass
 
+
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
+def userGenre(request):
+    if request.method == 'GET':
+        genres = Genres.objects.filter().values('genre').distinct()
+        return Response(genres, status=status.HTTP_200_OK)
+    
+    elif request.method == 'POST':
+        user = User.objects.get(pk=request.user.id)
+        serializer = UserGenreSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # 인기 영화 리스트

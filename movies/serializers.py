@@ -5,7 +5,7 @@ from .models import (
     Movies, 
     Reviews, 
     Comments,
-    UserVotededMovies,
+    UserGenreMovies,
     )
 
 
@@ -86,4 +86,14 @@ class CommentSaveSerializer(serializers.ModelSerializer):
             'content',
             'created_at',
             'updated_at',
+            )
+
+
+class UserGenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserGenreMovies
+        fields = (
+            'genre1',
+            'genre2',
+            'genre3',
             )

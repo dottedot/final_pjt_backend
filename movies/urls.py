@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # 사용자 원하는 장르
+    path('usergenre/', views.userGenre),
+    
     # 추천 영화 리스트
     path('recommendation/', views.recommendation),
 
