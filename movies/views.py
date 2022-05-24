@@ -32,7 +32,7 @@ def recommendation(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def popular(request):
-    movies = Movies.objects.order_by('vote_average')[:20]
+    movies = Movies.objects.order_by('-vote_average')[:20]
     serializer = MovieListSerializer(movies, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)

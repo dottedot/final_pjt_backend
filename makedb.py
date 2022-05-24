@@ -32,13 +32,14 @@ def get_movie():
         'title', 'overview','poster_path','tagline', 'genres',
         'release_date','vote_average','vote_count','runtime'
         ]
-    movies = []
-    cnt = 1
-    for id in range(1,10000):
-        cnt += 1
-        if cnt > 2000:
-            break
-        path = f'/movie/{id}'
+        
+    last_movie = get_last_movie()
+    now_id = last_movie.id
+    now_tmdb_id = last_movie.tmdb_id
+    
+    for tmdb_id in range(now_tmdb_id+1, 88888):
+        
+        path = f'/movie/{tmdb_id}'
         response = requests.get(BASE_URL+path, params=params)
         data = response.json()
 
@@ -57,8 +58,6 @@ def get_movie():
                 # 모든 key들이 정상적으로 존재한다면 정제 시작.
                 movie[key] = data[key]
             else:
-                movie['tmdb_id'] = id
-                
                 Movies(
                     title=movie['title'],
                     overview=movie['overview'],
@@ -68,18 +67,20 @@ def get_movie():
                     vote_average=movie['vote_average'],
                     vote_count=movie['vote_count'],
                     runtime=movie['runtime'],
-                    tmdb_id=movie['tmdb_id'],
+                    tmdb_id=tmdb_id,
                     ).save()
-                
-                id = get_movie_id()
 
-                print(f'save {id}')
+                now_id += 1
+                print(f'save id: {now_id}, {tmdb_id}, {movie["title"]}')
                 
                 for g in data['genres']:
-                    Genres(movie=id, genre=g['name']).save()
+                    Genres(
+                        movie=Movies.objects.get(id=now_id), 
+                        genre=g['name']
+                        ).save()
     # print(data)
 
-def get_movie_id():
+def get_last_movie():
     movies = Movies.objects.all()
     return Movies.objects.get(id=len(movies))
 
