@@ -1,6 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import get_user_model
 
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -20,14 +24,114 @@ from .serializers import (
 
 User = get_user_model()
 
+def get_cvector_genres():
+    N = 250
+    movies = Movies.objects.order_by('-vote_average')[:N]
+    data=[]
+    for i in range(N):
+        genres = Genres.objects.filter(movie=movies[i])
+        genre_str = ' '.join([genre.genre for genre in genres])
+        data.append([
+            movies[i].tmdb_id, genre_str, 
+            movies[i].vote_average, 
+            movies[i].vote_count])
+
+    df = pd.DataFrame(
+        data,
+        columns=[
+            'tmdb_id', 'genres', 
+            'vote_average', 'vote_count'
+            ]
+        )
+
+    m = df['vote_count'].quantile(1)
+    C = df['vote_average'].mean()
+
+    def weightd_rating(x, m=m, C=C):
+        v=x['vote_count']
+        R=x['vote_average']
+        return (v/(v+m+R)+(m/(m+v)*C))
+
+    df['score'] = df.apply(weightd_rating, axis=1)
+    
+    count_vector = CountVectorizer(ngram_range=(1,3))
+    cvector_genres = count_vector.fit_transform(df['genres'])
+    return cvector_genres, df
+
+
+cvector_genres, df = get_cvector_genres()
+
 
 # 추천 영화 리스트
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def recommendation(request):
-    pass
+    # 선택한 장르가 우선 (리뷰개수가 1단위면 그대로, 10단위면*5 100단위면*10 해서 가중치)
+    # 리뷰작성한거의 장르를 가지고 총 가중치를 구해서 정렬한다.
+    # 이거를 추천함수에 넣는다.
+
+    user_review = Reviews.objects.filter(user=request.user)
+    user_genre = UserGenreMovies.objects.get(user=request.user)
+        
+    if not user_review:
+        recommend = []
+        movies = Genres.objects.filter(genre=user_genre.genre1)[:20]
+        for movie in movies:
+            m = Movies.objects.get(pk=movie.movie_id).vote_average
+            recommend.append([movie.movie_id, m])
+        movies = Genres.objects.filter(genre=user_genre.genre2)[:20]
+        for movie in movies:
+            m = Movies.objects.get(pk=movie.movie_id).vote_average
+            recommend.append([movie.movie_id, m])
+        movies = Genres.objects.filter(genre=user_genre.genre3)[:20]
+        for movie in movies:
+            m = Movies.objects.get(pk=movie.movie_id).vote_average
+            recommend.append([movie.movie_id, m])
+        
+        recommend.sort(key = lambda x:-x[1])
+
+        if len(recommend) > 20:
+            recommend = recommend[:20]
+
+    else:
+        genre_c_sim = cosine_similarity(cvector_genres, cvector_genres).argsort()[:,::-1]
+        print(genre_c_sim)
+        def get_recommend_movie_list(df, top=30):
+            sim_index = genre_c_sim[user_review[0].movie.id, :top].reshape(-1)
+            result = df.iloc[sim_index].sort_values('score', ascending=False)[:40]
+            
+            for review in user_review[1:]:
+                sim_index = genre_c_sim[review.movie.id, :top].reshape(-1)
+                data = df.iloc[sim_index].sort_values('score', ascending=False)[:20]
+                print(result)
+                print(data)
+                result = pd.concat(result, data)
+            # result.sort_values('score', ascending=False)
+
+            result = result.drop_duplicates(['tmdb_id']).sort_values('score', ascending=False)[:20]
+            result = result.values.tolist()
+            return result
+        recommend = get_recommend_movie_list(df)
+
+    data = []
+
+    for reco in recommend:
+        # if type(reco)
+        if len(reco) == 2:
+            movie = Movies.objects.get(pk=reco[0])
+        else:
+            movie = Movies.objects.get(tmdb_id=reco[0])
+        data.append({
+            'tmdb_id': movie.tmdb_id,
+            'title': movie.title,
+            'posterurl': movie.posterurl,
+        })
+
+    return Response(data, status=status.HTTP_200_OK)
 
 
+
+# 시작시 사용자 장르 선택
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
 def userGenre(request):
@@ -41,6 +145,7 @@ def userGenre(request):
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
 # 인기 영화 리스트
