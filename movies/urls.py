@@ -17,8 +17,14 @@ urlpatterns = [
 
     # 리뷰 페이지
     path(
-        '<int:movie_pk>/reviews/', 
+        'reviews/', 
         views.reviews
+        ),
+
+    # 리뷰 작성페이지
+    path(
+        '<int:movie_pk>/reviews/', 
+        views.makereviews
         ),
 
     # 리뷰 상세 페이지

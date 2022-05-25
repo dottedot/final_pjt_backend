@@ -53,7 +53,7 @@ def get_cvector_genres():
         return (v/(v+m+R)+(m/(m+v)*C))
 
     df['score'] = df.apply(weightd_rating, axis=1)
-    print(df)
+    # print(df)
     
     count_vector = CountVectorizer(ngram_range=(1,3))
     cvector_genres = count_vector.fit_transform(df['genres'])
@@ -101,7 +101,7 @@ def recommendation(request):
             sim_index = genre_c_sim[user_review[0].movie.id, :top].reshape(-1)
             result = df.iloc[sim_index].sort_values('score', ascending=True)[:40]
             
-            print(result)
+            # print(result)
             for review in user_review[1:]:
                 sim_index = genre_c_sim[review.movie.id, :top].reshape(-1)
                 data = df.iloc[sim_index].sort_values('score', ascending=True)[:20]
@@ -182,10 +182,24 @@ def movieDetail(request, movie_pk):
 
 
 
+# 내가 작성한 모든 리뷰를 보여준다
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def reviews(request):
+
+    # GET Method
+    if request.method == 'GET':
+        reviews = Reviews.objects.filter(user=request.user)
+        serializer = ReviewListSerializer(reviews, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 # 전체 리뷰 보여주거나 리뷰 처음 작성하는 페이지
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-def reviews(request, movie_pk):
+def makereviews(request, movie_pk):
     movie = get_object_or_404(Movies, tmdb_id=movie_pk)
 
     # GET Method
