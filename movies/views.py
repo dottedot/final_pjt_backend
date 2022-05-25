@@ -25,8 +25,8 @@ from .serializers import (
 User = get_user_model()
 
 def get_cvector_genres():
-    N = 250
-    movies = Movies.objects.order_by('-vote_average')[:N]
+    N = 3001
+    movies = Movies.objects.order_by('-vote_average')[:3001]
     data=[]
     for i in range(N):
         genres = Genres.objects.filter(movie=movies[i])
@@ -95,7 +95,7 @@ def recommendation(request):
 
     else:
         genre_c_sim = cosine_similarity(cvector_genres, cvector_genres).argsort()[:,::-1]
-        print(genre_c_sim)
+        # print(genre_c_sim)
         def get_recommend_movie_list(df, top=30):
             sim_index = genre_c_sim[user_review[0].movie.id, :top].reshape(-1)
             result = df.iloc[sim_index].sort_values('score', ascending=False)[:40]
@@ -103,9 +103,9 @@ def recommendation(request):
             for review in user_review[1:]:
                 sim_index = genre_c_sim[review.movie.id, :top].reshape(-1)
                 data = df.iloc[sim_index].sort_values('score', ascending=False)[:20]
-                print(result)
-                print(data)
-                result = pd.concat(result, data)
+                # print(result)
+                # print(data)
+                result = pd.concat([result, data])
             # result.sort_values('score', ascending=False)
 
             result = result.drop_duplicates(['tmdb_id']).sort_values('score', ascending=False)[:20]
