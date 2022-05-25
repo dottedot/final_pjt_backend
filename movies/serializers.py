@@ -66,7 +66,7 @@ class ReviewSaveSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             )
-            
+
 
 # Comment Serializer
 class CommentListSerializer(serializers.ModelSerializer):

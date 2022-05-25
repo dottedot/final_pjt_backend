@@ -191,8 +191,14 @@ def reviews(request):
     if request.method == 'GET':
         reviews = Reviews.objects.filter(user=request.user)
         serializer = ReviewListSerializer(reviews, many=True)
+        serializer = serializer.data
+        # print(serializer)
+        for idx, review in enumerate(serializer):
+            # print(review)
+            movie = Movies.objects.get(pk=review['id'])
+            serializer[idx]['tmdb_id'] = movie.tmdb_id
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer, status=status.HTTP_200_OK)
 
 
 
