@@ -138,7 +138,7 @@ def userGenre(request):
     if request.method == 'GET':
         user_genre = UserGenreMovies.objects.filter(user=request.user)
         if len(user_genre) > 0:
-            return Response({}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'result':'이미 선택하셨습니다'}, status=status.HTTP_204_NO_CONTENT)
         else:
             genres = Genres.objects.filter().values('genre').distinct()
             return Response(genres, status=status.HTTP_200_OK)
