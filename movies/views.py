@@ -136,8 +136,12 @@ def recommendation(request):
 @permission_classes([IsAuthenticated])
 def userGenre(request):
     if request.method == 'GET':
-        genres = Genres.objects.filter().values('genre').distinct()
-        return Response(genres, status=status.HTTP_200_OK)
+        user_genre = UserGenreMovies.objects.filter(user=request.user)
+        if len(user_genre) > 0:
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            genres = Genres.objects.filter().values('genre').distinct()
+            return Response(genres, status=status.HTTP_200_OK)
     
     elif request.method == 'POST':
         user = User.objects.get(pk=request.user.id)
