@@ -44,7 +44,7 @@ def get_cvector_genres():
             ]
         )
 
-    m = df['vote_count'].quantile(1)
+    m = df['vote_count'].quantile(0.1)
     C = df['vote_average'].mean()
 
     def weightd_rating(x, m=m, C=C):
@@ -53,6 +53,7 @@ def get_cvector_genres():
         return (v/(v+m+R)+(m/(m+v)*C))
 
     df['score'] = df.apply(weightd_rating, axis=1)
+    print(df)
     
     count_vector = CountVectorizer(ngram_range=(1,3))
     cvector_genres = count_vector.fit_transform(df['genres'])
@@ -98,17 +99,18 @@ def recommendation(request):
         # print(genre_c_sim)
         def get_recommend_movie_list(df, top=30):
             sim_index = genre_c_sim[user_review[0].movie.id, :top].reshape(-1)
-            result = df.iloc[sim_index].sort_values('score', ascending=False)[:40]
+            result = df.iloc[sim_index].sort_values('score', ascending=True)[:40]
             
+            print(result)
             for review in user_review[1:]:
                 sim_index = genre_c_sim[review.movie.id, :top].reshape(-1)
-                data = df.iloc[sim_index].sort_values('score', ascending=False)[:20]
-                # print(result)
+                data = df.iloc[sim_index].sort_values('score', ascending=True)[:20]
                 # print(data)
                 result = pd.concat([result, data])
             # result.sort_values('score', ascending=False)
 
-            result = result.drop_duplicates(['tmdb_id']).sort_values('score', ascending=False)[:20]
+            result = result.drop_duplicates(['tmdb_id']).sort_values('score', ascending=True)[:20]
+            # print(result)
             result = result.values.tolist()
             return result
         recommend = get_recommend_movie_list(df)
