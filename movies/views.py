@@ -182,6 +182,20 @@ def movieDetail(request, movie_pk):
 
 
 
+# 영화 검색
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def search(request, text):
+    # print(text)
+    # GET Method
+    if request.method == 'GET':
+        movies = Movies.objects.filter(title__icontains=text)
+        serializer = MovieListSerializer(movies, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 # 내가 작성한 모든 리뷰를 보여준다
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])

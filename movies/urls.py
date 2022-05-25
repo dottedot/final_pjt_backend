@@ -15,30 +15,22 @@ urlpatterns = [
     path('<int:movie_pk>/', views.movieDetail),
 
 
+    # 영화 검색
+    path('search/<str:text>/', views.search),
+
+
     # 리뷰 페이지
-    path(
-        'reviews/', 
-        views.reviews
-        ),
+    path('reviews/', views.reviews),
 
     # 리뷰 작성페이지
-    path(
-        '<int:movie_pk>/reviews/', 
-        views.makereviews
-        ),
+    path('<int:movie_pk>/reviews/', views.makereviews),
 
     # 리뷰 상세 페이지
-    path(
-        '<int:movie_pk>/reviews/<int:review_pk>/', 
-        views.reviewDetail
-        ),
+    path('<int:movie_pk>/reviews/<int:review_pk>/', views.reviewDetail),
 
 
     # 리뷰 댓글
-    path(
-        '<int:movie_pk>/reviews/<int:review_pk>/comments/', 
-        views.comments
-        ),
+    path('<int:movie_pk>/reviews/<int:review_pk>/comments/', views.comments),
 
     # 리뷰 댓글 수정
     path(
