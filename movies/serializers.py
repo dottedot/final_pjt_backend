@@ -49,6 +49,7 @@ class ReviewListSerializer(serializers.ModelSerializer):
         model = Reviews
         fields = (
             'id',
+            'movie',
             'title',
             'content',
             'score',

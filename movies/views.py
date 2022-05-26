@@ -75,20 +75,21 @@ def recommendation(request):
     user_genre = UserGenreMovies.objects.get(user=request.user)
         
     if not user_review:
-        recommend = []
+        recommend = set()
         movies = Genres.objects.filter(genre=user_genre.genre1)[:20]
         for movie in movies:
             m = Movies.objects.get(pk=movie.movie_id).vote_average
-            recommend.append([movie.movie_id, m])
+            recommend.add([movie.movie_id, m])
         movies = Genres.objects.filter(genre=user_genre.genre2)[:20]
         for movie in movies:
             m = Movies.objects.get(pk=movie.movie_id).vote_average
-            recommend.append([movie.movie_id, m])
+            recommend.add([movie.movie_id, m])
         movies = Genres.objects.filter(genre=user_genre.genre3)[:20]
         for movie in movies:
             m = Movies.objects.get(pk=movie.movie_id).vote_average
-            recommend.append([movie.movie_id, m])
-        
+            recommend.add([movie.movie_id, m])
+
+        recommend = list(recommend)
         recommend.sort(key = lambda x:-x[1])
 
         if len(recommend) > 20:
@@ -208,8 +209,8 @@ def reviews(request):
         serializer = serializer.data
         # print(serializer)
         for idx, review in enumerate(serializer):
-            # print(review)
-            movie = Movies.objects.get(pk=review['id'])
+            print(review)
+            movie = Movies.objects.get(pk=review['movie'])
             serializer[idx]['tmdb_id'] = movie.tmdb_id
 
         return Response(serializer, status=status.HTTP_200_OK)
@@ -270,7 +271,7 @@ def makereviews(request, movie_pk):
 @permission_classes([IsAuthenticated])
 def reviewDetail(request, movie_pk, review_pk):
     movie = get_object_or_404(Movies, tmdb_id=movie_pk)
-    review = Reviews.objects.get(pk=review_pk)
+    review = get_object_or_404(Reviews, pk=review_pk, user=request.user)
 
     # GET Method
     if request.method == 'GET':
@@ -309,7 +310,6 @@ def reviewDetail(request, movie_pk, review_pk):
 
         if serializer.is_valid(raise_exception=True):
             serializer.save(movie=movie, user=user)
-
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
 
@@ -347,7 +347,7 @@ def comments(request, movie_pk, review_pk):
 def commentDetail(request, movie_pk, review_pk, comment_pk):
     movie = get_object_or_404(Movies, tmdb_id=movie_pk)
     review = get_object_or_404(Reviews, pk=review_pk)
-    comment = Comments.objects.get(pk=comment_pk)
+    comment = get_object_or_404(Comments, pk=comment_pk, user=request.user)
 
     # DELETE Method
     if request.method == 'DELETE':
@@ -363,5 +363,4 @@ def commentDetail(request, movie_pk, review_pk, comment_pk):
 
         if serializer.is_valid(raise_exception=True):
             serializer.save(movie=movie, user=user, review=review)
-
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
