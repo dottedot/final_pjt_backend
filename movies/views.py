@@ -209,7 +209,7 @@ def reviews(request):
         serializer = serializer.data
         # print(serializer)
         for idx, review in enumerate(serializer):
-            print(review)
+            # print(review)
             movie = Movies.objects.get(pk=review['movie'])
             serializer[idx]['tmdb_id'] = movie.tmdb_id
 
@@ -271,7 +271,7 @@ def makereviews(request, movie_pk):
 @permission_classes([IsAuthenticated])
 def reviewDetail(request, movie_pk, review_pk):
     movie = get_object_or_404(Movies, tmdb_id=movie_pk)
-    review = get_object_or_404(Reviews, pk=review_pk, user=request.user)
+    review = get_object_or_404(Reviews, pk=review_pk)
 
     # GET Method
     if request.method == 'GET':
@@ -305,6 +305,7 @@ def reviewDetail(request, movie_pk, review_pk):
 
     # PUT Method
     elif request.method == 'PUT':
+        review = get_object_or_404(Reviews, pk=review_pk, user=request.user)
         user = User.objects.get(pk=request.user.id)
         serializer = ReviewSaveSerializer(data=request.data, instance=review)
 
