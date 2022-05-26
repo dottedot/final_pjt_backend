@@ -160,7 +160,7 @@ ALLOWED_HOSTS = ['13.209.181.35','localhost','127.0.0.1']
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8080', # 로컬 vue 서버
     'http://localhost:8080', # 로컬 vue 서버
-
+    'https://moviebayo.netlify.app',
     # 'https://ooo.com', # 프로덕션 vue 서버
 ]
 
