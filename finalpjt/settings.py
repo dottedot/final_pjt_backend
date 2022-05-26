@@ -154,7 +154,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
-ALLOWED_HOSTS = ['13.209.181.35','localhost','127.0.0.1']
+ALLOWED_HOSTS = [
+    '13.209.181.35',
+    'localhost',
+    '127.0.0.1',
+    'http://ssafy-final-pjt-frontend.s3-website.ap-northeast-2.amazonaws.com'
+    ]
 
 # CORS WHITELIST
 CORS_ALLOWED_ORIGINS = [
