@@ -161,6 +161,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8080', # 로컬 vue 서버
     'http://localhost:8080', # 로컬 vue 서버
     'https://moviebayo.netlify.app',
+    'http://ssafy-final-pjt-frontend.s3-website.ap-northeast-2.amazonaws.com/'
     # 'https://ooo.com', # 프로덕션 vue 서버
 ]
 
