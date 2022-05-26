@@ -155,20 +155,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 ALLOWED_HOSTS = [
-    '13.209.181.35',
-    'localhost',
-    '127.0.0.1',
-    'http://ssafy-final-pjt-frontend.s3-website.ap-northeast-2.amazonaws.com'
+    # '13.209.181.35',
+    # 'localhost',
+    # '127.0.0.1',
+    # 'http://ssafy-final-pjt-frontend.s3-website.ap-northeast-2.amazonaws.com'
+    '*'
     ]
 
 # CORS WHITELIST
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8080', # 로컬 vue 서버
-    'http://localhost:8080', # 로컬 vue 서버
-    'https://moviebayo.netlify.app',
-    'http://ssafy-final-pjt-frontend.s3-website.ap-northeast-2.amazonaws.com'
-    # 'https://ooo.com', # 프로덕션 vue 서버
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://127.0.0.1:8080', # 로컬 vue 서버
+#     'http://localhost:8080', # 로컬 vue 서버
+#     'https://moviebayo.netlify.app',
+#     'http://ssafy-final-pjt-frontend.s3-website.ap-northeast-2.amazonaws.com'
+#     # 'https://ooo.com', # 프로덕션 vue 서버
+# ]
+
+CORS_ORIGIN_ALLOW_ALL=True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
